@@ -16,6 +16,7 @@
   $email = $_POST['email'];
   $mailFormat = $_POST['mailFormat'];
   $confirmBox = $_POST['confirmBox'];
+  $checkedBox = false ;
 
   function checkUserName($username){
   if(isset($_POST["fullName"])){
@@ -47,64 +48,66 @@ function displayValue($trimmed, $string){
    $clean[$string]= $html;
    echo $clean[$string];
   }
-  // if(checkEmail($email)){
 
-  //   echo $clean["email"] ;
+function checkEmail($email){
 
+  if(isset($_POST["email"])){
+    $trimmed = $_POST["email"];
+    if(filter_var($email, FILTER_VALIDATE_EMAIL)&& $email!==""){
+        displayValue($trimmed, "email");
+        return true;
+    }
+    else{
+        return false;
+    }
+  }
+}
 
-  // }
-        function checkEmail($email){
+function checkFormat($mailFormat){
+   if(isset($_POST["mailFormat"])){
+    $trimmed = $_POST["mailFormat"];
+    if($mailFormat=="HTML" || $mailFormat=="Plain text"){
+        // $html = htmlentities($mailFormat);
+        displayValue($trimmed, "mailFormat");
+       }
+    else{
+        return false;
+    }
+  }
+}
+  
+function checkBox($confirmBox){
+ if(isset($_POST['submit'])){ 
+    $form_submitted = true;
+    if(isset($_POST["confirmBox"])){ 
+        $checkedBox = true ;
+        // displayValue($trimmed, "confirmBox");
+        return "checked";
+    }
+    else {
+      return "" ;
+    }
+  }
+}
 
-          if(isset($_POST["email"])){
-            $trimmed = $_POST["email"];
-            if(filter_var($email, FILTER_VALIDATE_EMAIL)&& $email!==""){
-                displayValue($trimmed, "email");
-                return true;
-            }
-            else{
-                return false;
-            }
-          }
-        }
-
-        function checkFormat($mailFormat){
-           if(isset($_POST["mailFormat"])){
-            $trimmed = $_POST["mailFormat"];
-            if($mailFormat=="HTML" || $mailFormat=="Plain text"){
-                $html = htmlentities($mailFormat);
-                return "<p>".$html." is a valid selection</p>";
-            }
-            else{
-                return "<p>That's an invalid selection</p>";
-            }
-          }
-        }
-
-
-//    $form_submitted = false ;
-//    $errors_in_form = false ;
-//    $username = $_POST['fullName'];
-//    $email = $_POST['email'];
-//    if(isset($_POST['submit'])){
-//      $form_submitted = true ;
-//      checkUserName($username);
-//       echo "Is is set?".isset($clean["fullName"]);
-//      if(isset($clean["fullName"])){
-//       $fullName = $clean['fullName'];
-//       print_r($clean);
-//      }
-//      else {
-//        $fullName= $error['fullName'];
-//      }
-//     checkEmail($email);
-//     if(isset($clean["email"])){
-//       $email = $clean['email'];
-//     }
-//     else {
-//        $email = $error['email'];
-//     }
-//     echo $fullName ;
-// }
+   $form_submitted = false ;
+   $errors_in_form = false ;
+   if(isset($_POST['submit'])){
+    echo "form has been submitted";
+     
+     // return checked;
+     }
+     else {
+       $fullName= $error['fullName'];
+     }
+    // checkEmail($email);
+    // if(isset($clean["email"])){
+    //   $email = $clean['email'];
+    // }
+    // else {
+    //    $email = $error['email'];
+    // }
+    // echo $fullName ;
 
         // echo(checkUserName($username)["fullName"]);
         // echo checkEmail($email);

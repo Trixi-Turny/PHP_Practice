@@ -8,32 +8,24 @@
     <head>
         <title>Sign Up to our Mailing List!</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
         <h1>Sign Up to Our Mailing List!</h1>
         <?php
           $self = htmlentities($_SERVER['PHP_SELF']);
          ?>
-
         <form action="<?php echo $self; ?>" method="POST">
-
             <fieldset>
 			<legend>Sign Up</legend>
                 <div>
-                    <?php
-                      $username = $_POST["fullname"];
-                      // $fullName = checkUserName($username) === true? "displayValue($username)":("");
-                     ?>
-
                     <label for="fullName">*Full Name</label>
-                    <input value = "<?php checkUserName($username); ?>" type="text" name="fullName" id="fullName" required/>
-
-
+                    <input value = "<?php checkUserName($userName); ?>" type="text" name="fullName" id="fullName" required/>
                 </div>
                 <div>
                     <label for="email">*Email</label>
                     <input value = "<?php checkEmail($email); ?>" type="text" name="email" id="email" required />
-                </div>
+                </div>  
                 <div>
                     <label for="mailFormat">Mail format</label>
                     <select name="mailFormat" id="mailFormat">
@@ -42,7 +34,7 @@
                     </select>
                 </div>
                 <div>
-                    <input type="checkbox" name="confirmBox" id="confirmBox" value="yes" />
+                    <input  type="checkbox" name="confirmBox" id="confirmBox"  <?php echo (checkBox($confirmBox))?> />
                     <label for="confirmBox">*Tick this box to confirm you have read our <a href="#">terms and conditions</a></label>
                 </div>
                 <div>
@@ -50,8 +42,5 @@
                 </div>
             </fieldset>
         </form>
-
-
-
     </body>
 </html>
