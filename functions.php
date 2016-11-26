@@ -109,9 +109,5 @@ function checkBox($confirmBox){
     // }
     // echo $fullName ;
 
-        // echo(checkUserName($username)["fullName"]);
-        // echo checkEmail($email);
-        // echo checkFormat($mailFormat);
-
    ?>
 
