@@ -52,7 +52,7 @@ function displayValue($trimmed, $string){
 function checkEmail($email){
 
   if(isset($_POST["email"])){
-    $trimmed = $_POST["email"];
+    $trimmed = trim($_POST["email"]);
     if(filter_var($email, FILTER_VALIDATE_EMAIL)&& $email!==""){
         displayValue($trimmed, "email");
         return true;
@@ -65,7 +65,7 @@ function checkEmail($email){
 
 function checkFormat($mailFormat){
    if(isset($_POST["mailFormat"])){
-    $trimmed = $_POST["mailFormat"];
+    $trimmed = trim($_POST["mailFormat"]);
     if($mailFormat=="HTML" || $mailFormat=="Plain text"){
         // $html = htmlentities($mailFormat);
         displayValue($trimmed, "mailFormat");
@@ -80,12 +80,14 @@ function checkBox($confirmBox){
  if(isset($_POST['submit'])){ 
     $form_submitted = true;
     if(isset($_POST["confirmBox"])){ 
-        $checkedBox = true ;
+       $trimmed = "checked";
+        // $checkedBox = true ;
+       displayValue($trimmed, $confirmBox);
         // displayValue($trimmed, "confirmBox");
-        return "checked";
+        return true;
     }
     else {
-      return "" ;
+      return false ;
     }
   }
 }

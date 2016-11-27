@@ -34,7 +34,7 @@
                     </select>
                 </div>
                 <div>
-                    <input  type="checkbox" name="confirmBox" id="confirmBox"  <?php echo (checkBox($confirmBox))?> />
+                    <input  type="checkbox" name="confirmBox" id="confirmBox"  <?php  checkBox($confirmBox)?> />
                     <label for="confirmBox">*Tick this box to confirm you have read our <a href="#">terms and conditions</a></label>
                 </div>
                 <div>
