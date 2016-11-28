@@ -20,8 +20,10 @@
 			<legend>Sign Up</legend>
                 <div>
                     <label for="fullName">*Full Name</label>
-                    <input value = "<?php checkUserName($userName); ?>" type="text" name="fullName" id="fullName" required/>
+                    <input  class="<?php echo setClass('fullName');?>" value = "<?php  $clean['fullName'] ?>" type="text" name="fullName" id="fullName" required/>
                 </div>
+                <div class='errorMessage'>Errors Here:<?php  $errors['fullName'];
+                ?></div>
                 <div>
                     <label for="email">*Email</label>
                     <input value = "<?php checkEmail($email); ?>" type="text" name="email" id="email" required />
