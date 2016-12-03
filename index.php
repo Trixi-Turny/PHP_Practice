@@ -14,105 +14,82 @@
   $email = $_POST['email'];
   $mailFormat = $_POST['mailFormat'];
   $formSubmitted = false;
-  $errors= true;
-      $errors = array();
-    $clean = array();
-
-  if(isset($_POST['submit'])){
-    $formSubmitted = true ;
-    // checkUserName($username);
-    // checkEmail($email);
-    // checkFormat($format);
-    // checkBox($confirmBox);
-  }
+  $errors = array();
+  $clean = array();
 
     function checkUserName($username){   
       if(isset($_POST["fullName"])){
         // echo $_POST["fullName"];
          $trimmed =rtrim(ltrim($_POST["fullName"]));
           if(ctype_alpha(str_replace(" ", "", $trimmed)) && strpos($trimmed, " ")!==false && strlen($trimmed)<=150){
-          $validUsername = displayValue($trimmed, "fullName");
+          $validUsername = displayValue($clean, $trimmed, "fullName");
           return $validUsername ;
-          
-          // return displayValue($trimmed, "fullName");
         }
         else if(!(ctype_alpha($trimmed))){
           $errorMessage = "<p>The name you entered contains invalid characters.</p>";
-          saveError($errorMessage, "fullName");
-
-
-          $classUserName = "error";
-          // $errors["fullName"] = $errorMessage;
-    
+          saveError($errors, $errorMessage, "fullName");
           return false;
         }
         else if(!(strpos($trimmed, " ")!==false)){
           $errorMessage = "<p>Your full name should contain at least one space</p>";
-           saveError($errorMessage, "fullName");
+           saveError($errors, $errorMessage, "fullName");
            $classUserName = "error";
-      
           return false;
         }
         else {
           $errorMessage = "<p>Your full name should not exceed 150 characters./p>";
-          saveError($errorMessage, "fullName");
+          saveError($errors, $errorMessage, "fullName");
           $classUserName = "error";
-
           return false;
         }
       }
     } 
 
-  function displayValue($trimmed, $key){
+  function displayValue($array, $trimmed, $key){
      $html = htmlentities($trimmed);
-     $clean[$key]=$trimmed;
-     return $clean[$key];
+     $array[$key]=$trimmed;
+     return $array[$key];
 
   }
-  function saveError($error, $key){
+  function saveError($array, $error, $key){
     echo "saving error for".$key;
     $html = htmlentities($error);
-    $errors[$key] = $html ;
-    echo $errors[$key];
-    print_r($errors);
-
+    $array[$key] = $html ;
+    echo $array[$key];
+    print_r($array);
   }
 
   function checkEmail($email){
-  if(isset($_POST["submit"])){
-    if(isset($_POST["email"])){
-      $trimmed = trim($_POST["email"]);
-      if(filter_var($trimmed, FILTER_VALIDATE_EMAIL)&& $trimmed!==""){
-        $validEmail  = displayValue($trimmed, "email");
-        return $validEmail ;
-      }
-      else{
-          $errorMessage = "<p>Please enter a valid email address.</p>";
-          saveError($errorMessage, "email");
-      
-          return false;
+    if(isset($_POST["submit"])){
+      if(isset($_POST["email"])){
+        $trimmed = trim($_POST["email"]);
+        if(filter_var($trimmed, FILTER_VALIDATE_EMAIL)&& $trimmed!==""){
+          $validEmail  = displayValue($clean, $trimmed, "email");
+          return $validEmail ;
+        }
+        else{
+            $errorMessage = "<p>Please enter a valid email address.</p>";
+            saveError($errors, $errorMessage, "email");
+            return false;
+        }
       }
     }
   }
 
-  }
-
   function checkFormat($mailFormat){
       $trimmed = trim($_POST["mailFormat"]);
-      if($trimmed="html" ){
+      if($trimmed=="html" ){
         $format = $trimmed;
-        displayValue($trimmed, "mailFormat");
-        return true ;
+        return displayValue($clean, $trimmed, "mailFormat");
 
       }else if( $trimmed=="plain"){
           $trimmed = "plain";
           $format = $trimmed;
-          displayValue($trimmed, "mailFormat");
-          return true;
+         return  displayValue($clean, $trimmed, "mailFormat");
          }
       else{
           $errorMessage = "<p>The format you selected is invalid.</p>";
-          saveError($errorMessage, "mailFormat");
+          saveError($errors, $errorMessage, "mailFormat");
           return false;
       }
     }
@@ -120,45 +97,29 @@
   function checkBox($confirmBox){
     if(isset($_POST["confirmBox"])){ 
        $trimmed = "checked";
-        // $checkedBox = true ;
-       displayValue($trimmed, $confirmBox);
-        // displayValue($trimmed, "confirmBox");
-        return true;
+       return  displayValue($clean, $trimmed, $confirmBox);
+       return true;
     }
     else {
         $errorMessage = "<p>Please confirm you agree to our Terms and Conditions</p>";
-        saveError($errorMessage, "confirmBox");
-      return false ;
+        saveError($errors, $errorMessage, "confirmBox");
+        return false ;
     }
   }
 
-
-  function setClass($errors, $key){
-   $found =  isset($errors[$key]) ? "error" : ''; //http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
-     echo $found ;
-
-  
+  function setClass($array, $key){
+   $found =  isset($array[$key]) ? "error" : ''; //http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
+    return $found ;
 }
 
-  // function isItSet($array, $key){
-  //   if (isset($array['$key'])){
-  //     return true;
-  //   }
-  //   else {
-  //     echo $errors['fullName'];
-  //     return   false ;
-  //   }
-  // }
-
-
-
-    if(isset($_POST['submit'])){
-      $submittedUserName = checkUserName($username) ;
-      $submittedEmail = checkEmail($email);
-      // echo"errorClass".$errorClass ;
-     
-
-    }
+  if(isset($_POST['submit'])){
+    $formSubmitted = true;
+    $submittedUserName = checkUserName($username) ;
+    $submittedEmail = checkEmail($email);
+    $submittedCheckBox = checkBox($confirmBox);
+    $plainSeelected = (checkFormat($mailFormat)==="plain")? 'selected': "";
+    $htmlSelected = (checkFormat($mailFormat)==="html")? 'selected': "";
+  }
     
   foreach($_POST as $key => $dataitem){
       if(isset($_POST[$key])){
@@ -187,15 +148,11 @@
             <fieldset>
 			<legend>Sign Up</legend>
                 <div>
-
-      
-
                     <label for='fullName'>*Full Name</label>
-                    <input  class='<?php echo  $classUserName;?>' value ="<?php echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
+                    <input  class='<?php echo $errorClassFullName;?>' value ="<?php echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
                 </div>
-          
-
-                <div class="<?php echo $classUserName; ?>">Errors Here: <?php $userNameError; ?></div>
+      
+                <div class="<?php echo $classUserName; ?>">Errors Here: <?php echo $errorMessage; ?></div>
               
                 <div>
                     <label for='email'>*Email</label>
@@ -204,12 +161,12 @@
                 <div>
                     <label for='mailFormat'>Mail format</label>
                     <select name='mailFormat' id='mailFormat' >
-                        <option value='plain' selected = <?php checkFormat($mailFormat); ?> >Plain text</option>
-                        <option value='html' selected = <?php checkFormat($mailFormat); ?>  >HTML</option>
+                        <option value='plain' <?php echo $plainSelected ?> >Plain text</option>
+                        <option value='html' <?php echo $htmlSelected ?>>HTML</option>
                     </select>
                 </div>
                 <div>
-                    <input  type='checkbox' name='confirmBox' id='confirmBox'  <?php ?> />
+                    <input  type='checkbox' name='confirmBox' id='confirmBox'  <?php echo $submittedCheckBox; ?> />
                     <label for='confirmBox'>*Tick this box to confirm you have read our <a href='#'>terms and conditions</a></label>
                 </div>
                 <div>
