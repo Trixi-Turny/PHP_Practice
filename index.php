@@ -16,11 +16,31 @@
             <fieldset>
 			<legend>Sign Up</legend>
                 <div>
+
+                <?php
+                  if(formSubmitted){
+                     $cleanData = htmlentities($clean['fullName']);
+                    
+
+                  }
+                  ?>
+
                     <label for='fullName'>*Full Name</label>
-                    <input  class='<?php echo setClass('fullName');?>' value ="<?php checkUserName($username); ?> " type='text' name='fullName' id='fullName' required/>
+                    <input  class='<?php echo setClass('fullName');?>' value ="<?php echo  $cleanData ;?> " type='text' name='fullName' id='fullName' required/>
                 </div>
-                <div class='errorMessage'>Errors Here:<?php  isset($errors['fullName'])? $errors['fullName']: '';
-                ?></div>
+                <?php
+
+                  if(formSubmitted){
+                     $error = isItSet($errors, 'fullName');
+
+                   } else{
+ 
+                        $error = "bla";
+                   }
+
+
+                 echo "<div class='errorMessage'>Errors Here:".$error."</div>";?>
+              
                 <div>
                     <label for='email'>*Email</label>
                     <input value = '<?php checkEmail($email); ?>' type='text' name='email' id='email' required />
@@ -45,12 +65,13 @@
 </html>
 
 <?php
+
+
     $errors = array();
     $clean = array();
     foreach($_POST as $key => $dataitem){
       if(isset($_POST[$key])){
         echo "<p>".$key." : ".htmlentities($dataitem)."</p>";
-
       }else{
         echo "<p>Field".$key."not submitted</p>";
 
@@ -61,25 +82,21 @@
 
 
 
-
-// if( isset($_POST["submit"])){
-  $username = $_POST['fullName'];
+$username = $_POST['fullName'];
 $email = $_POST['email'];
 $mailFormat = $_POST['mailFormat'];
-// $confirmBox = $_POST['confirmBox'];
+$formSubmitted = false;
 
-//   checkUserName($username);
-//   checkEmail($email);
-//   checkFormat($mailFormat);
+if(isset($_POST['submit'])){
+  $formSubmitted = true ;
+  checkUserName($username);
+  checkEmail($email);
+  checkFormat($format);
+  checkBox($confirmBox);
+}
 
-//   // checkBox($confirmBox); 
-
-// // if (isset($errors["fullName"])){
 
 
-// // }
-
-// }
   function checkUserName($username){
   if( isset($_POST["submit"])){   
     if(isset($_POST["fullName"])){
@@ -111,8 +128,8 @@ $mailFormat = $_POST['mailFormat'];
 
 function displayValue($trimmed, $key){
    $html = htmlentities($trimmed);
-   $clean[$key]=$html;
-   echo $clean[$key];
+   $clean[$key]=$trimmed;
+   // echo $clean[$key];
 }
 function saveError($error, $key){
   $html = htmlentities($error);
@@ -140,7 +157,13 @@ if(isset($_POST["submit"])){
 function checkFormat($mailFormat){
    if(isset($_POST["mailFormat"])){
     $trimmed = trim($_POST["mailFormat"]);
-    if($trimmed=="html" || $trimmed=="plain"){
+    if($trimmed="html" ){
+      $format = $trimmed;
+      displayValue($trimmed, "mailFormat");
+
+    }else if( $trimmed=="plain"){
+        $trimmed = "plain";
+        $format = $trimmed;
         displayValue($trimmed, "mailFormat");
        }
     else{
@@ -175,6 +198,18 @@ function setClass($key){
     return "Hi";
   }
 }
+
+function isItSet($array, $key){
+  if (isset($array['$key'])){
+    return $array['key'];
+  }
+  else {
+    return   "";
+}
+}
+
+
+
 
    ?>
 

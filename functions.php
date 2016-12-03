@@ -105,8 +105,13 @@ if (isset($_POST["email"])){
 function checkFormat($mailFormat){
    if(isset($_POST["mailFormat"])){
     $trimmed = trim($_POST["mailFormat"]);
-    if($trimmed="HTML" || $trimmed=="Plain text"){
-        $trimmed = "selected";
+    if($trimmed="html" ){
+      $format = $trimmed;
+      displayValue($trimmed, "mailFormat");
+
+    }else if $trimmed=="plain"){
+        $trimmed = "plain";
+        $format = $trimmed;
         displayValue($trimmed, "mailFormat");
        }
     else{
@@ -122,7 +127,6 @@ function checkBox($confirmBox){
      $trimmed = "checked";
       // $checkedBox = true ;
      displayValue($trimmed, $confirmBox);
-      // displayValue($trimmed, "confirmBox");
       return true;
   }
   else {
