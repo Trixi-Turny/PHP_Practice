@@ -13,53 +13,63 @@
   $username = $_POST['fullName'];
   $email = $_POST['email'];
   $mailFormat = $_POST['mailFormat'];
+  $confirmBox = $_POST['confirmBox'];
   $formSubmitted = false;
   $errors = array();
   $clean = array();
+  $submittedUserName = "";
+  $submittedEmail = "" ;
+  $submittedCheckBox = "";
+  $plainSeelected  =  "" ;
+  $htmlSelected  = "";
+  $errorFullName  = "";
 
-    function checkUserName($username){   
-      if(isset($_POST["fullName"])){
-        // echo $_POST["fullName"];
-         $trimmed =rtrim(ltrim($_POST["fullName"]));
-          if(ctype_alpha(str_replace(" ", "", $trimmed)) && strpos($trimmed, " ")!==false && strlen($trimmed)<=150){
-          $validUsername = displayValue($clean, $trimmed, "fullName");
-          return $validUsername ;
-        }
-        else if(!(ctype_alpha($trimmed))){
-          $errorMessage = "<p>The name you entered contains invalid characters.</p>";
-          saveError($errors, $errorMessage, "fullName");
-          return false;
-        }
-        else if(!(strpos($trimmed, " ")!==false)){
-          $errorMessage = "<p>Your full name should contain at least one space</p>";
-           saveError($errors, $errorMessage, "fullName");
-           $classUserName = "error";
-          return false;
-        }
-        else {
-          $errorMessage = "<p>Your full name should not exceed 150 characters./p>";
-          saveError($errors, $errorMessage, "fullName");
-          $classUserName = "error";
-          return false;
-        }
+  
+
+  function checkUserName($username){  
+    global $clean, $errors, $errorFullName;
+
+    if(isset($_POST["fullName"])){
+       $trimmed =rtrim(ltrim($_POST["fullName"]));
+        if(ctype_alpha(str_replace(" ", "", $trimmed)) && strpos($trimmed, " ")!==false && strlen($trimmed)<=150){
+        $validUsername = displayValue($clean, $trimmed, "fullName");
+        return $validUsername ;
       }
-    } 
+      else if(!(ctype_alpha($trimmed))){
+        $errorMessage = "<p>The name you entered contains invalid characters.</p>";
+        $errorFullName = saveError($errors, $errorMessage, "fullName");
+        echo "errorFullName".$errorFullName ;
+        return false;
+      }
+      else if(!(strpos($trimmed, " ")!==false)){
+        $errorMessage = "<p>Your full name should contain at least one space</p>";
+         $errorFullName = saveError($errors, $errorMessage, "fullName");
+         $classUserName = "error";
+        return false;
+      }
+      else {
+        $errorMessage = "<p>Your full name should not exceed 150 characters./p>";
+        $errorFullName = saveError($errors, $errorMessage, "fullName");
+        $classUserName = "error";
+        return false;
+      }
+    }
+  } 
 
   function displayValue($array, $trimmed, $key){
      $html = htmlentities($trimmed);
      $array[$key]=$trimmed;
      return $array[$key];
-
   }
+
   function saveError($array, $error, $key){
-    echo "saving error for".$key;
     $html = htmlentities($error);
     $array[$key] = $html ;
-    echo $array[$key];
-    print_r($array);
+    return $html ;
+
   }
 
-  function checkEmail($email){
+  function checkEmail($email, $clean, $errors){
     if(isset($_POST["submit"])){
       if(isset($_POST["email"])){
         $trimmed = trim($_POST["email"]);
@@ -76,7 +86,7 @@
     }
   }
 
-  function checkFormat($mailFormat){
+  function checkFormat($mailFormat, $clean, $errors){
       $trimmed = trim($_POST["mailFormat"]);
       if($trimmed=="html" ){
         $format = $trimmed;
@@ -94,7 +104,7 @@
       }
     }
     
-  function checkBox($confirmBox){
+  function checkBox($confirmBox, $clean, $errors){
     if(isset($_POST["confirmBox"])){ 
        $trimmed = "checked";
        return  displayValue($clean, $trimmed, $confirmBox);
@@ -112,47 +122,49 @@
     return $found ;
 }
 
+// function showErrorDiv($errors, $username, $clean){
+//    $error = $errors[];
+
+//    echo "showError".$error ;
+//    $errorDiv = "<div class = 'error'>".$errors[0]."</div>";
+//    return $errorDiv ;
+// }
+
+
   if(isset($_POST['submit'])){
     $formSubmitted = true;
-    $submittedUserName = checkUserName($username) ;
-    $submittedEmail = checkEmail($email);
-    $submittedCheckBox = checkBox($confirmBox);
-    $plainSeelected = (checkFormat($mailFormat)==="plain")? 'selected': "";
-    $htmlSelected = (checkFormat($mailFormat)==="html")? 'selected': "";
+    $submittedUserName = checkUserName($username, $clean, $errors) ;
+    $submittedEmail = checkEmail($email, $clean, $errors);
+    $submittedCheckBox = checkBox($confirmBox, $clean, $errors);
+    $plainSeelected = (checkFormat($mailFormat, $clean, $errors)==="plain")? 'selected': "";
+    $htmlSelected = (checkFormat($mailFormat, $clean, $errors)==="html")? 'selected': "";
+    $errorDiv  = "<div class = 'error'>".$errorFullName."</div>";
   }
     
-  foreach($_POST as $key => $dataitem){
-      if(isset($_POST[$key])){
-        echo "<p>".$key." : ".htmlentities($dataitem)."</p>";
-        echo "errors".$errors[$key];
-        echo "clean".$clean[$key];
+  // foreach($_POST as $key => $dataitem){
+  //     if(isset($_POST[$key])){
+  //       echo "<p>".$key." : ".htmlentities($dataitem)."</p>";
+  //       echo "errors".$errors[$key];
+  //       echo "clean".$clean[$key];
 
-      }else{
-        echo "<p>Field".$key."not submitted</p>";
+  //     }else{
+  //       echo "<p>Field".$key."not submitted</p>";
 
-      }
-    }
-      // if(isset($_POST['submit'])){
-      //   foreach($errors as $key => $dataitem){
-      //     echo "<p>errors".$key." : ".htmlentities($dataitem)."</p>";
-      //   }
-      //   foreach($clean as $key => $dataitem){
-      //     echo "<p>clean data:".$key." : ".htmlentities($dataitem)."</p>";
-      //   }
-      // }
+  //     }
+  //   }
+
 
 ?>
 
-  
         <form action='<?php echo $self; ?>' method='POST'>
             <fieldset>
 			<legend>Sign Up</legend>
                 <div>
                     <label for='fullName'>*Full Name</label>
-                    <input  class='<?php echo $errorClassFullName;?>' value ="<?php echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
+
+                    <input  class='<?php ?>' value ="<?php  echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
+
                 </div>
-      
-                <div class="<?php echo $classUserName; ?>">Errors Here: <?php echo $errorMessage; ?></div>
               
                 <div>
                     <label for='email'>*Email</label>
@@ -174,6 +186,7 @@
                 </div>
             </fieldset>
         </form>
+          <?php echo $errorDiv;?>   
     </body>
 </html>
 
