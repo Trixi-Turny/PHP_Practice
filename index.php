@@ -10,24 +10,26 @@
         <h1>Sign Up to Our Mailing List!</h1>
 <?php
   $self = htmlentities($_SERVER['PHP_SELF']);
-  $username = $_POST['fullName'];
-  $email = $_POST['email'];
-  $mailFormat = $_POST['mailFormat'];
-  $confirmBox = $_POST['confirmBox'];
+
   $formSubmitted = false;
   $errors = array();
   $clean = array();
+  $errorDivFullName = "";
+  $errorDivEmail = "" ;
+  $errorDivFormat = "" ;
+  $errorDivCheckBox = "" ;
   $submittedUserName = "";
   $submittedEmail = "" ;
-  $submittedCheckBox = "";
-  $plainSeelected  =  "" ;
-  $htmlSelected  = "";
-  $errorFullName  = "";
+  $errorEmail = "";
+  $errorFormat = "" ;
+  $errorConfirmBox = "";
+  $inputClassFullName = "";
+  $inputClassEmail = "";
+  $inputClassCheckBox  = "";
 
   
-
   function checkUserName($username){  
-    global $clean, $errors, $errorFullName;
+    global $clean, $errors, $errorFullName, $errorDivFullName, $inputClassFullName; 
 
     if(isset($_POST["fullName"])){
        $trimmed =rtrim(ltrim($_POST["fullName"]));
@@ -36,40 +38,46 @@
         return $validUsername ;
       }
       else if(!(ctype_alpha($trimmed))){
-        $errorMessage = "<p>The name you entered contains invalid characters.</p>";
+        $errorMessage = "The name you entered contains invalid characters.";
         $errorFullName = saveError($errors, $errorMessage, "fullName");
-        echo "errorFullName".$errorFullName ;
-        return false;
+        $errorDivFullName = generateDiv($errorFullName, "fullName");
+        $inputClassFullName = "error" ;
+        return displayValue($errors, $trimmed, "fullName");
       }
       else if(!(strpos($trimmed, " ")!==false)){
-        $errorMessage = "<p>Your full name should contain at least one space</p>";
+        $errorMessage = "Your full name should contain at least one space";
          $errorFullName = saveError($errors, $errorMessage, "fullName");
-         $classUserName = "error";
-        return false;
+         $errorDivFullName = generateDiv($errorFullName, "fullName");
+         $inputClassFullName = "error" ;
+        return displayValue($errors, $trimmed, "fullName");
       }
       else {
-        $errorMessage = "<p>Your full name should not exceed 150 characters./p>";
+        $errorMessage = "Your full name should not exceed 150 characters";
         $errorFullName = saveError($errors, $errorMessage, "fullName");
-        $classUserName = "error";
-        return false;
+        $errorDivFullName = generateDiv($errorFullName, "fullName");
+        $inputClassFullName = "error" ;
+        return displayValue($errors, $trimmed, "fullName");
       }
     }
   } 
 
   function displayValue($array, $trimmed, $key){
+     global $errors, $clean ;
      $html = htmlentities($trimmed);
      $array[$key]=$trimmed;
      return $array[$key];
   }
 
-  function saveError($array, $error, $key){
+  function saveError($errors, $error, $key){
+    global $errors, $clean ;
     $html = htmlentities($error);
-    $array[$key] = $html ;
+    $errors[$key] = $html ;
     return $html ;
 
   }
 
-  function checkEmail($email, $clean, $errors){
+  function checkEmail($email){
+    global $errors, $clean, $errorEmail, $errorDivEmail, $inputClassEmail;
     if(isset($_POST["submit"])){
       if(isset($_POST["email"])){
         $trimmed = trim($_POST["email"]);
@@ -78,15 +86,18 @@
           return $validEmail ;
         }
         else{
-            $errorMessage = "<p>Please enter a valid email address.</p>";
-            saveError($errors, $errorMessage, "email");
-            return false;
+            $errorMessage = "Please enter a valid email address.";
+           $errorEmail =  saveError($errors, $errorMessage, "email");
+           $errorDivEmail = generateDiv($errorEmail, "email");
+           $inputClassEmail = "error" ;
+          return displayValue($errors, $trimmed, "email");
         }
       }
     }
   }
 
-  function checkFormat($mailFormat, $clean, $errors){
+  function checkFormat($mailFormat){
+      global $errors, $clean, $errorFormat, $errorDivFormat;
       $trimmed = trim($_POST["mailFormat"]);
       if($trimmed=="html" ){
         $format = $trimmed;
@@ -95,81 +106,84 @@
       }else if( $trimmed=="plain"){
           $trimmed = "plain";
           $format = $trimmed;
-         return  displayValue($clean, $trimmed, "mailFormat");
+         return displayValue($clean, $trimmed, "mailFormat");
          }
       else{
-          $errorMessage = "<p>The format you selected is invalid.</p>";
-          saveError($errors, $errorMessage, "mailFormat");
-          return false;
+          $errorMessage = "The format you selected is invalid.";
+           $errorFormat = saveError($errors, $errorMessage, "mailFormat");
+           $errorDivEmail =generateDiv($errorFormat, "mailFormat");
+          return displayValue($errors, $trimmed, "mailFormat") ;
       }
     }
     
-  function checkBox($confirmBox, $clean, $errors){
+  function checkBox($confirmBox){
+    global $errors, $clean , $errorConfirmBox, $errorDivCheckBox, $inputClassCheckBox;
     if(isset($_POST["confirmBox"])){ 
        $trimmed = "checked";
        return  displayValue($clean, $trimmed, $confirmBox);
-       return true;
     }
     else {
-        $errorMessage = "<p>Please confirm you agree to our Terms and Conditions</p>";
-        saveError($errors, $errorMessage, "confirmBox");
-        return false ;
+        $errorMessage = "Please confirm you agree to our Terms and Conditions";
+        $errorConfirmBox =  saveError($errors, $errorMessage, "confirmBox");
+        $errorDivCheckBox = generateDiv($errorConfirmBox, "confirmBox");
+        $inputClassCheckBox = "error" ;
+        return false;
     }
   }
 
-  function setClass($array, $key){
-   $found =  isset($array[$key]) ? "error" : ''; //http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
+  function setClass($errors, $key){
+    global $errors;
+    $found =  array_key_exists($key, $errors) ? "error" : ''; //http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
     return $found ;
 }
 
-// function showErrorDiv($errors, $username, $clean){
-//    $error = $errors[];
+function generateDiv($error, $key){
+  global $errors ;
+  $errorDiv = "<div><p class = 'error'>".$error."</p></div>";
+  return $errorDiv ;
+  }
 
-//    echo "showError".$error ;
-//    $errorDiv = "<div class = 'error'>".$errors[0]."</div>";
-//    return $errorDiv ;
-// }
 
 
   if(isset($_POST['submit'])){
+    $username = $_POST['fullName'];
+    $email = $_POST['email'];
+    $mailFormat = $_POST['mailFormat'];
+    $confirmBox = $_POST['confirmBox'];
     $formSubmitted = true;
-    $submittedUserName = checkUserName($username, $clean, $errors) ;
-    $submittedEmail = checkEmail($email, $clean, $errors);
-    $submittedCheckBox = checkBox($confirmBox, $clean, $errors);
-    $plainSeelected = (checkFormat($mailFormat, $clean, $errors)==="plain")? 'selected': "";
-    $htmlSelected = (checkFormat($mailFormat, $clean, $errors)==="html")? 'selected': "";
-    $errorDiv  = "<div class = 'error'>".$errorFullName."</div>";
+    $submittedUserName = checkUserName($username) ;
+    $submittedEmail = checkEmail($email);
+    $submittedCheckBox = checkBox($confirmBox);
+    $plainSeelected = (checkFormat($mailFormat)==="plain")? 'selected': "";
+    $htmlSelected = (checkFormat($mailFormat)==="html")? 'selected': "";
+    print_r($clean);
   }
     
-  // foreach($_POST as $key => $dataitem){
-  //     if(isset($_POST[$key])){
-  //       echo "<p>".$key." : ".htmlentities($dataitem)."</p>";
-  //       echo "errors".$errors[$key];
-  //       echo "clean".$clean[$key];
-
-  //     }else{
-  //       echo "<p>Field".$key."not submitted</p>";
-
-  //     }
-  //   }
-
-
 ?>
 
         <form action='<?php echo $self; ?>' method='POST'>
             <fieldset>
 			<legend>Sign Up</legend>
+
+              <div class = "column1">
                 <div>
                     <label for='fullName'>*Full Name</label>
-
-                    <input  class='<?php ?>' value ="<?php  echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
-
+                    <input  class='<?php echo $inputClassFullName ;  ?>' value ="<?php  echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
                 </div>
-              
+              </div>
+              <div class = "column2">
+                <?php echo $errorDivFullName ;?> 
+              </div>
+              <div class = "column1">
                 <div>
                     <label for='email'>*Email</label>
-                    <input  class  = "<?php ?>" value = '<?php echo $submittedEmail; ?>' type='text' name='email' id='email' required />
+                    <input  class='<?php echo $inputClassEmail;  ?>' value = '<?php echo $submittedEmail; ?>' type='text' name='email' id='email' required />
                 </div>  
+                </div>
+                <div class = "column2">
+                <?php echo $errorDivEmail ;?> 
+              </div>
+              <div class = "column1">
                 <div>
                     <label for='mailFormat'>Mail format</label>
                     <select name='mailFormat' id='mailFormat' >
@@ -177,16 +191,26 @@
                         <option value='html' <?php echo $htmlSelected ?>>HTML</option>
                     </select>
                 </div>
-                <div>
-                    <input  type='checkbox' name='confirmBox' id='confirmBox'  <?php echo $submittedCheckBox; ?> />
+                </div>
+                <div class = "column2">
+                <?php echo $errorDivFormat ;?> 
+              </div>
+              <div class = "column1">
+
+                   <div class='<?php echo $inputClassCheckBox ;  ?>'> <input  class='<?php echo $inputClassCheckBox ;  ?>' type='checkbox' id='confirmBox' name='confirmBox'  <?php echo $submittedCheckBox; ?> /></div>
                     <label for='confirmBox'>*Tick this box to confirm you have read our <a href='#'>terms and conditions</a></label>
                 </div>
+              </div>
+              <div class = "column2">
+              <?php echo $errorDivCheckBox ;?> 
+              </div>
+               
                 <div>
                     <input type='submit' name='submit' value='Send' />
                 </div>
             </fieldset>
         </form>
-          <?php echo $errorDiv;?>   
+            
     </body>
 </html>
 
