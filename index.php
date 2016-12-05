@@ -34,47 +34,32 @@
     if(isset($_POST["fullName"])){
        $trimmed =rtrim(ltrim($_POST["fullName"]));
         if(ctype_alpha(str_replace(" ", "", $trimmed)) && strpos($trimmed, " ")!==false && strlen($trimmed)<=150){
-        $validUsername = displayValue($clean, $trimmed, "fullName");
+        $validUsername = saveValidEntry($clean, $trimmed, "fullName");
         return $validUsername ;
       }
       else if(!(ctype_alpha($trimmed))){
         $errorMessage = "The name you entered contains invalid characters.";
         $errorFullName = saveError($errors, $errorMessage, "fullName");
         $errorDivFullName = generateDiv($errorFullName, "fullName");
-        $inputClassFullName = "error" ;
-        return displayValue($errors, $trimmed, "fullName");
+        $inputClassFullName = setClass($errors, "fullName");
+        return htmlentities($trimmed);
       }
       else if(!(strpos($trimmed, " ")!==false)){
         $errorMessage = "Your full name should contain at least one space";
          $errorFullName = saveError($errors, $errorMessage, "fullName");
          $errorDivFullName = generateDiv($errorFullName, "fullName");
-         $inputClassFullName = "error" ;
-        return displayValue($errors, $trimmed, "fullName");
+         $inputClassFullName = setClass($errors, "fullName");
+         return htmlentities($trimmed);
       }
       else {
         $errorMessage = "Your full name should not exceed 150 characters";
         $errorFullName = saveError($errors, $errorMessage, "fullName");
         $errorDivFullName = generateDiv($errorFullName, "fullName");
-        $inputClassFullName = "error" ;
-        return displayValue($errors, $trimmed, "fullName");
+        $inputClassFullName = setClass($errors, "fullName");
+        return htmlentities($trimmed);
       }
     }
   } 
-
-  function displayValue($array, $trimmed, $key){
-     global $errors, $clean ;
-     $html = htmlentities($trimmed);
-     $array[$key]=$trimmed;
-     return $array[$key];
-  }
-
-  function saveError($errors, $error, $key){
-    global $errors, $clean ;
-    $html = htmlentities($error);
-    $errors[$key] = $html ;
-    return $html ;
-
-  }
 
   function checkEmail($email){
     global $errors, $clean, $errorEmail, $errorDivEmail, $inputClassEmail;
@@ -82,15 +67,15 @@
       if(isset($_POST["email"])){
         $trimmed = trim($_POST["email"]);
         if(filter_var($trimmed, FILTER_VALIDATE_EMAIL)&& $trimmed!==""){
-          $validEmail  = displayValue($clean, $trimmed, "email");
+          $validEmail  = saveValidEntry($clean, $trimmed, "email");
           return $validEmail ;
         }
         else{
             $errorMessage = "Please enter a valid email address.";
            $errorEmail =  saveError($errors, $errorMessage, "email");
            $errorDivEmail = generateDiv($errorEmail, "email");
-           $inputClassEmail = "error" ;
-          return displayValue($errors, $trimmed, "email");
+           $inputClassEmail = setClass($errors,"email");
+          return htmlentities($trimmed);
         }
       }
     }
@@ -101,18 +86,20 @@
       $trimmed = trim($_POST["mailFormat"]);
       if($trimmed=="html" ){
         $format = $trimmed;
-        return displayValue($clean, $trimmed, "mailFormat");
+        saveValidEntry($clean, $trimmed, "mailFormat");
+        return htmlentities($trimmed);
 
       }else if( $trimmed=="plain"){
           $trimmed = "plain";
           $format = $trimmed;
-         return displayValue($clean, $trimmed, "mailFormat");
+          saveValidEntry($clean, $trimmed, "mailFormat");
+         return htmlentities($trimmed);
          }
       else{
           $errorMessage = "The format you selected is invalid.";
            $errorFormat = saveError($errors, $errorMessage, "mailFormat");
            $errorDivEmail =generateDiv($errorFormat, "mailFormat");
-          return displayValue($errors, $trimmed, "mailFormat") ;
+          return htmlentities($trimmed);
       }
     }
     
@@ -120,29 +107,43 @@
     global $errors, $clean , $errorConfirmBox, $errorDivCheckBox, $inputClassCheckBox;
     if(isset($_POST["confirmBox"])){ 
        $trimmed = "checked";
-       return  displayValue($clean, $trimmed, $confirmBox);
+       saveValidEntry($clean, $trimmed, "confirmBox");
+       return htmlentities($trimmed);
     }
     else {
-        $errorMessage = "Please confirm you agree to our Terms and Conditions";
+        $errorMessage = "Please confirm you agree to our Terms and Conditions.";
         $errorConfirmBox =  saveError($errors, $errorMessage, "confirmBox");
         $errorDivCheckBox = generateDiv($errorConfirmBox, "confirmBox");
-        $inputClassCheckBox = "error" ;
+        $inputClassCheckBox = setClass($errors, "confirmBox") ;
         return false;
     }
+  }
+  
+  function saveValidEntry($clean, $trimmed, $key){
+     global $errors, $clean ;
+     $html = htmlentities($trimmed);
+     $clean[$key]=$html;
+     return $html;
+  }
+
+  function saveError($errors, $error, $key){
+    global $errors, $clean ;
+    $html = htmlentities($error);
+    $errors[$key] = $html ;
+    return $html ;
   }
 
   function setClass($errors, $key){
     global $errors;
     $found =  array_key_exists($key, $errors) ? "error" : ''; //http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
     return $found ;
-}
+ }
 
 function generateDiv($error, $key){
   global $errors ;
   $errorDiv = "<div><p class = 'error'>".$error."</p></div>";
   return $errorDiv ;
   }
-
 
 
   if(isset($_POST['submit'])){
@@ -157,6 +158,7 @@ function generateDiv($error, $key){
     $plainSeelected = (checkFormat($mailFormat)==="plain")? 'selected': "";
     $htmlSelected = (checkFormat($mailFormat)==="html")? 'selected': "";
     print_r($clean);
+    print_r($errors);
   }
     
 ?>
