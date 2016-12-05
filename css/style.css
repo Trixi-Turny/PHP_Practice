@@ -30,3 +30,7 @@ div.error {
     text-align: center;
     padding: -2px;
 }
+
+.invisible {
+    display: none;
+}

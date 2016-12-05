@@ -135,7 +135,10 @@
 
   function setClass($errors, $key){
     global $errors;
-    $found =  array_key_exists($key, $errors) ? "error" : ''; //http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
+    $found =  array_key_exists($key, $errors) ? "error" : '';
+    if(empty($errors)){
+     $found = "invisible" ; 
+     }//http://stackoverflow.com/questions/24760004/check-if-associative-array-contains-value-and-retrieve-key-position-in-array
     return $found ;
  }
 
@@ -143,7 +146,7 @@ function generateDiv($error, $key){
   global $errors ;
   $errorDiv = "<div><p class = 'error'>".$error."</p></div>";
   return $errorDiv ;
-  }
+}
 
 
   if(isset($_POST['submit'])){
@@ -159,63 +162,69 @@ function generateDiv($error, $key){
     $htmlSelected = (checkFormat($mailFormat)==="html")? 'selected': "";
     print_r($clean);
     print_r($errors);
-  }
-    
-?>
+      if (formSubmitted ==true && empty($errors)){
+       echo "<h3>Thank You for submitting the form. Your details have been sent.</h3>";
+       $invisible = setClass($errors, $key);
+     }
+}
+  ?>
 
+  <div class="<?php echo $invisible;?>">
         <form action='<?php echo $self; ?>' method='POST'>
             <fieldset>
-			<legend>Sign Up</legend>
+                <legend>Sign Up</legend>
 
-              <div class = "column1">
-                <div>
-                    <label for='fullName'>*Full Name</label>
-                    <input  class='<?php echo $inputClassFullName ;  ?>' value ="<?php  echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
+                <div class="column1">
+                    <div>
+                        <label for='fullName'>*Full Name</label>
+                        <input class='<?php echo $inputClassFullName ;  ?>' value="<?php  echo  $submittedUserName ;?> " type='text' name='fullName' id='fullName' required/>
+                    </div>
                 </div>
-              </div>
-              <div class = "column2">
-                <?php echo $errorDivFullName ;?> 
-              </div>
-              <div class = "column1">
-                <div>
-                    <label for='email'>*Email</label>
-                    <input  class='<?php echo $inputClassEmail;  ?>' value = '<?php echo $submittedEmail; ?>' type='text' name='email' id='email' required />
-                </div>  
+                <div class="column2">
+                    <?php echo $errorDivFullName ;?>
                 </div>
-                <div class = "column2">
-                <?php echo $errorDivEmail ;?> 
-              </div>
-              <div class = "column1">
-                <div>
-                    <label for='mailFormat'>Mail format</label>
-                    <select name='mailFormat' id='mailFormat' >
-                        <option value='plain' <?php echo $plainSelected ?> >Plain text</option>
-                        <option value='html' <?php echo $htmlSelected ?>>HTML</option>
-                    </select>
+                <div class="column1">
+                    <div>
+                        <label for='email'>*Email</label>
+                        <input class='<?php echo $inputClassEmail;  ?>' value='<?php echo $submittedEmail; ?>' type='text' name='email' id='email' required />
+                    </div>
                 </div>
+                <div class="column2">
+                    <?php echo $errorDivEmail ;?>
                 </div>
-                <div class = "column2">
-                <?php echo $errorDivFormat ;?> 
-              </div>
-              <div class = "column1">
+                <div class="column1">
+                    <div>
+                        <label for='mailFormat'>Mail format</label>
+                        <select name='mailFormat' id='mailFormat'>
+                            <option value='plain' <?php echo $plainSelected ?> >Plain text</option>
+                            <option value='html' <?php echo $htmlSelected ?>>HTML</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="column2">
+                    <?php echo $errorDivFormat ;?>
+                </div>
+                <div class="column1">
 
-                   <div class='<?php echo $inputClassCheckBox ;  ?>'> <input  class='<?php echo $inputClassCheckBox ;  ?>' type='checkbox' id='confirmBox' name='confirmBox'  <?php echo $submittedCheckBox; ?> /></div>
-                    <label for='confirmBox'>*Tick this box to confirm you have read our <a href='#'>terms and conditions</a></label>
+                    <div class='<?php echo $inputClassCheckBox ;  ?>'>
+                        <input class='<?php echo $inputClassCheckBox ;  ?>' type='checkbox' id='confirmBox' name='confirmBox' <?php echo $submittedCheckBox; ?> />
+                    </div>
+
+                    <label for='confirmBox'>*Tick this box to confirm you have read our <a href='#'>terms and conditions</a>
+                    </label>
                 </div>
-              </div>
-              <div class = "column2">
-              <?php echo $errorDivCheckBox ;?> 
-              </div>
-               
+
+                <div class="column2">
+                    <?php echo $errorDivCheckBox ;?>
+                </div>
+
                 <div>
                     <input type='submit' name='submit' value='Send' />
                 </div>
             </fieldset>
         </form>
-            
-    </body>
+    </div>
+
+</body>
+
 </html>
-
-
-
-
